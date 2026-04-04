@@ -6,7 +6,7 @@ import Cart from "./components/Cart";
 import Footer from "./components/Footer";
 import Categories from "./components/Categories";
 import ProductDetails from "./components/ProductDetails";
-import MyOrders from "./components/Myorders";
+import MyOrders from "./components/MyOrders";
 import Login from "./components/Login";
 import Register from "./components/Register";
 
