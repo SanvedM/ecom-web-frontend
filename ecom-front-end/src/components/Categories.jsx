@@ -20,6 +20,7 @@ export default function Categories() {
       setCategories(res.data.data);
 
       console.log(res.data, "this is  the data============")
+      console.log("NEW BUILD 123");
 
     }
     catch (error) {
