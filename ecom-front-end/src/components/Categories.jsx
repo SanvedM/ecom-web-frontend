@@ -180,9 +180,7 @@ export default function Categories() {
   {p.name}
 </p>
 
-<p className="mt-2 text-gray-500 text-sm">
-  ₹ {variant ? Number(variant.price).toLocaleString() : "N/A"}
-                        ₹
+<p className="mt-2 text-gray-500 text-sm">₹
                         {variant
                           ? Number(variant.price).toLocaleString()
                           : "N/A"}
