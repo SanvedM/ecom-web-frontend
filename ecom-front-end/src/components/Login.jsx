@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { publicApi } from "../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -14,27 +14,25 @@ export default function Login() {
         password,
       });
 
-      // ✅ Save token
       localStorage.setItem("token", res.data.access);
-
-
-      navigate("/"); // redirect to home
+      navigate("/");
     } catch (err) {
-      console.log(err);
       alert("Invalid credentials");
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow w-80">
+    <div className="flex justify-center items-center h-screen bg-gray-50">
+      <div className="bg-white p-10 rounded-lg shadow-sm w-96 border">
 
-        <h2 className="text-xl font-semibold mb-4 text-center">Login</h2>
+        <h2 className="text-2xl font-medium text-center mb-6 tracking-wide">
+          Login
+        </h2>
 
         <input
           type="text"
           placeholder="Username"
-          className="w-full mb-3 p-2 border rounded"
+          className="w-full mb-4 p-3 border rounded focus:outline-none focus:border-black"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -42,17 +40,33 @@ export default function Login() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full mb-4 p-2 border rounded"
+          className="w-full mb-6 p-3 border rounded focus:outline-none focus:border-black"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
           onClick={handleLogin}
-          className="w-full bg-black text-white py-2 rounded"
+          className="w-full bg-black text-white py-3 rounded hover:bg-gray-900 transition"
         >
           Login
         </button>
+        <p className="text-center mt-3 text-sm text-gray-500">
+  <Link to="/forgot-password" className="hover:underline">
+    Forgot Password?
+  </Link>
+</p>
+
+        {/* 🔥 Small subtle register link BELOW button */}
+        <p className="text-center mt-4 text-sm text-gray-500">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-black hover:underline font-medium"
+          >
+            Register
+          </Link>
+        </p>
 
       </div>
     </div>
