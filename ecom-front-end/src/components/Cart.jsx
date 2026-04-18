@@ -1,238 +1,279 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { privateApi } from "../api/axios";
+import PaymentSection from "./PaymentSection";
+import AddressForm from "./AddressForm";
 
 export default function Cart() {
-  // const [cartItems, setCartItems] = useState([
-  //   {
-  //     id: 1,
-  //     name: "Gold Ring",
-  //     price: 2499,
-  //     qty: 2,
-  //     img: "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Pearl Necklace",
-  //     price: 3299,
-  //     qty: 1,
-  //     img: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f"
-  //   }
-  // ]);
+
+  const [showAddress, setShowAddress] = useState(false);
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  const [savedAddress, setSavedAddress] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+
+  const [address, setAddress] = useState({
+    address_line: "",
+    city: "",
+    state: "",
+    pincode: "",
+    mobile: "",
+    first_name: "",
+    last_name: ""
+  });
+  const [toast, setToast] = useState({
+  show: false,
+  message: ""
+});
 
   const [cartItems, setCartItems] = useState([]);
-const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    fetchCart();
+    fetchAddress();
+  }, []);
 
-
-const fetchCart = async () => {
-  setLoading(true);
-  try {
-    const res = await privateApi.get("my-cart");
-
-    console.log(res.data);
-
-    setCartItems(res.data.data);   // 👈 IMPORTANT
-
-  } catch (err) {
-    console.log(err);
-  }
-  setLoading(false);
-};
-
-useEffect(() => {
-  fetchCart();
-}, []);
-
-
-  // ➕ Increase qty
-  // const increaseQty = (id) => {
-  //   setCartItems(cartItems.map(item =>
-  //     item.id === id ? { ...item, qty: item.quantity + 1 } : item
-  //   ));
-  // };
-
-  // // ➖ Decrease qty
-  // const decreaseQty = (id) => {
-  //   setCartItems(cartItems.map(item =>
-  //     item.id === id
-  //       ? { ...item, qty: item.quantity > 1 ? item.quantity - 1 : 1 }
-  //       : item
-  //   ));
-  // };
-
-  const increaseQty = async (item) => {
-  const newQty = item.quantity + 1;
-
-  try {
-    await privateApi.post("update-cart", {
-      item_id: item.id,
-      quantity: newQty
-    });
-
-    fetchCart(); // 🔥 refresh cart
-
-  } catch (err) {
-    alert("Stock limit reached ❌");
-  }
-};
-
-
-
-const decreaseQty = async (item) => {
-  if (item.quantity <= 1) return;
-
-  const newQty = item.quantity - 1;
-
-  await privateApi.post("update-cart", {
-    item_id: item.id,
-    quantity: newQty
-  });
-
-  fetchCart();
-};
-  // ❌ Remove item
-  const removeItem = async(item) => {
-    console.log(item.id,"lsuus")
+  // ================= FETCH CART =================
+  const fetchCart = async () => {
     try {
+      const res = await privateApi.get("my-cart");
+      setCartItems(res.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-    setCartItems(cartItems.filter(item => item.id !== item.id));
-    await privateApi.delete("delete-cart", {
-      data: {
-        item_id: item.id
-      }
-    });
+  // ================= FETCH ADDRESS =================
+  const fetchAddress = async () => {
+    try {
+      const res = await privateApi.get("get-address"); // ✅ FIXED
+      setSavedAddress(res.data); // ✅ FIXED
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-    fetchCart(); // 🔥 refresh cart
+  // AUTO SELECT
+  useEffect(() => {
+    if (savedAddress) {
+      setSelectedAddress(savedAddress);
+    }
+  }, [savedAddress]);
 
-  } catch (err) {
-    alert("error while deleteing the cart❌",err);
-  }
-};
+  // ================= REMOVE =================
+  const removeItem = async (item) => {
+    try {
+      setCartItems(cartItems.filter(i => i.id !== item.id));
 
-  // 💰 Total
+      await privateApi.delete("delete-cart", {
+        data: { item_id: item.id }
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const total = cartItems.reduce(
     (acc, item) => acc + Number(item.price) * item.quantity,
     0
   );
 
   return (
-    <div className="py-20 px-10 min-h-[100dvh] max-w-6xl mx-auto">
+    <div className="py-20 px-10 min-h-[100dvh] max-w-6xl mx-auto font-semibold text-[#0f3d33]">
 
       <h2 className="text-3xl font-serif mb-8">Shopping Cart</h2>
 
-      {/* 🛑 EMPTY CART */}
       {cartItems.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-xl mb-4">🛒 Your cart is empty</p>
-          <button className="bg-black text-white px-6 py-2 rounded">
-            Continue Shopping
-          </button>
+          <p className="text-xl">🛒 Your cart is empty</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-10">
+        <>
+          <div className="grid md:grid-cols-3 gap-10">
 
-          {/* 🧾 LEFT: ITEMS */}
-          <div className="md:col-span-2 space-y-6">
+            {/* LEFT */}
+            <div className="md:col-span-2 space-y-6">
+              {cartItems.map(item => (
+                <div key={item.id} className="flex gap-6 border p-4 rounded-lg">
 
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex gap-6 border rounded-lg p-4 shadow-sm"
-              >
-                <img
-                  src={item.image}
-                  className="w-28 h-28 object-cover rounded"
-                />
+                  <img src={item.image} className="w-28 h-28 rounded" />
 
-                <div className="flex-1">
-                  <p className="font-medium text-lg">{item.product_name}</p>
-
-                  <p className="text-gray-500 mt-1">
-                    ₹{Number(item.price).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Stock: {item.product_stock || "N/A"}
-                  </p>
-
-                  {/* QUANTITY CONTROL */}
-                  <div className="flex items-center gap-3 mt-4">
+                  <div className="flex-1">
+                    <p className="font-medium">{item.product_name}</p>
+                    <p>₹{item.price}</p>
 
                     <button
-                      onClick={() => decreaseQty(item)}
-                      className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      onClick={() => removeItem(item)}
+                      className="text-red-500 text-sm mt-2"
                     >
-                      -
+                      Remove
                     </button>
-
-                    <span className="font-medium">{item.quantity}</span>
-
-                    <button
-                      onClick={() => increaseQty(item)}
-                      className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                    >
-                      +
-                    </button>
-
                   </div>
 
-                  {/* REMOVE */}
-                  <button
-                    onClick={() => removeItem(item)}
-                    className="text-red-500 text-sm mt-3 hover:underline"
-                  >
-                    Remove
-                  </button>
+                  <p>₹{item.price * item.quantity}</p>
                 </div>
+              ))}
+            </div>
 
-                {/* PRICE */}
-                <p className="font-semibold text-lg">
-                  ₹{(Number(item.price) * item.quantity).toLocaleString()}
-                </p>
+            {/* RIGHT */}
+            <div className="border p-6 rounded-lg h-fit">
+
+              <h3 className="text-xl mb-4">Price Details</h3>
+
+              <div className="flex justify-between">
+                <span>Total</span>
+                <span>₹{total}</span>
               </div>
-            ))}
+
+              <button
+                onClick={() => setShowAddress(true)}
+                className="mt-6 w-full bg-blue-600 text-white py-3 rounded"
+              >
+                Proceed to Checkout
+              </button>
+
+            </div>
 
           </div>
 
-          {/* 💳 RIGHT: SUMMARY */}
-          <div className="border rounded-lg p-6 shadow-md h-fit">
+          {/* ================= ADDRESS ================= */}
+          {showAddress && (
+            <div className="mt-10">
 
-            <h3 className="text-xl font-semibold mb-4">
-              Price Details
-            </h3>
+              <div className="bg-white p-6 rounded-xl shadow-md">
 
-            <div className="flex justify-between mb-2">
-              <span>Price</span>
-              <span>₹{total.toLocaleString()}</span>
+                <h2 className="text-xl mb-4">Delivery Address</h2>
+
+                {/* ADDRESS EXISTS */}
+                {savedAddress && !showNewAddressForm && (
+                  <div
+                    onClick={() => setSelectedAddress(savedAddress)}
+                    className={`p-5 rounded-xl cursor-pointer transition border
+                      ${selectedAddress ? "border-green-600 bg-green-50" : "border-gray-200 hover:shadow-md"}
+                    `}
+                  >
+
+                    <div className="flex justify-between mb-3">
+                      <h3 className="font-semibold text-lg">
+                        Saved Address
+                      </h3>
+
+                      {selectedAddress && (
+                        <span className="text-green-600 text-sm font-medium">
+                          ✔ Selected
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="text-sm text-gray-700 space-y-1">
+                      <p><span className="text-gray-500">Name:</span> {savedAddress.full_name}</p>
+                      <p><span className="text-gray-500">Phone:</span> {savedAddress.phone}</p>
+                      <p><span className="text-gray-500">Address:</span> {savedAddress.address_line}</p>
+                      <p><span className="text-gray-500">Location:</span> {savedAddress.city}, {savedAddress.state}</p>
+                      <p><span className="text-gray-500">Pincode:</span> {savedAddress.pincode}</p>
+                    </div>
+
+                    <div className="flex gap-4 mt-4">
+
+                      <button
+                        disabled={!selectedAddress}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAddress(false);
+                        }}
+                        className={`px-4 py-2 rounded text-white
+                          ${selectedAddress ? "bg-green-700" : "bg-gray-400 cursor-not-allowed"}
+                        `}
+                      >
+                        Deliver Here
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowNewAddressForm(true);
+                        }}
+                        className="text-blue-600 underline"
+                      >
+                        Update Address
+                      </button>
+
+                    </div>
+
+                  </div>
+                )}
+
+                {/* NO ADDRESS */}
+                {!savedAddress && !showNewAddressForm && (
+                  <button
+                    onClick={() => setShowNewAddressForm(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                  >
+                    Add Address
+                  </button>
+                )}
+
+                {/* FORM */}
+                {showNewAddressForm && (
+                  <AddressForm
+                    address={address}
+                    setAddress={setAddress}
+                    editData={savedAddress}
+                    onSave={(data) => {
+                      setSavedAddress(data);
+                      setSelectedAddress(data);
+                      setShowNewAddressForm(false);
+                      setAddress({});
+                    }}
+                  />
+                )}
+
+              </div>
+
+              {/* PAYMENT */}
+              {selectedAddress && !showNewAddressForm && (
+                <PaymentSection
+                  onCOD={async () => {
+                    try {
+                      console.log("COD CLICKED"); // 👈 DEBUG
+
+                      const res = await privateApi.post("create-order", {
+                        address_id: selectedAddress.id,
+                        payment_method: "COD"
+                      });
+
+                      console.log("ORDER RESPONSE:", res.data);
+
+                     setToast({
+                        show: true,
+                        message: "Order placed successfully ✅"
+                      });
+                      // auto hide
+                      setTimeout(() => {
+                        setToast({ show: false, message: "" });
+                      }, 2000);
+                                            // OPTIONAL: clear cart UI
+                      setCartItems([]);
+
+                    } catch (err) {
+                      console.log("ERROR:", err.response?.data || err);
+                      alert("Order failed ❌");
+                    }
+                  }}
+                  onOnline={() => alert("Redirect to payment")}
+                />
+              )}
+
             </div>
-
-            <div className="flex justify-between mb-2 text-green-600">
-              <span>Discount</span>
-              <span>- ₹0</span>
-            </div>
-
-            <div className="flex justify-between mb-4">
-              <span>Delivery</span>
-              <span className="text-green-600">Free</span>
-            </div>
-
-            <hr className="my-3" />
-
-            <div className="flex justify-between font-semibold text-lg">
-              <span>Total</span>
-              <span>₹{total.toLocaleString()}</span>
-            </div>
-
-            {/* CHECKOUT BUTTON */}
-            <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg 
-            hover:bg-blue-700 hover:scale-105 active:scale-95 transition">
-              Proceed to Checkout
-            </button>
-
-          </div>
-
-        </div>
+          )}
+        </>
       )}
+      {toast.show && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+    <div className="bg-white px-6 py-4 rounded-xl shadow-lg text-center">
+      <p className="text-lg font-medium">{toast.message}</p>
+    </div>
+  </div>
+)}
     </div>
   );
 }

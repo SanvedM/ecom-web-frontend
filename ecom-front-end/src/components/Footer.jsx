@@ -2,9 +2,9 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <div className="bg-gradient-to-r from-[#1a1a1a] via-[#2a1f24] to-[#1a1a1a] border-t border-[#2a2a2a] py-12 px-6 md:px-16">
+    <div className="bg-gradient-to-r from-[#1a1a1a] via-[#2a1f24] to-[#1a1a1a] border-t border-[#2a2a2a] py-8 px-6 md:px-16">
 
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
 
         {/* LEFT LOGO */}
         <div className="text-lg md:text-xl font-serif font-semibold tracking-[0.35em] text-[#ffe4e9]">

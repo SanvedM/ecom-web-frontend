@@ -1,14 +1,15 @@
 import axios from "axios";
 
 // 🌐 Base URL
-const BASE_URL = "https://sanved-ecom.up.railway.app/api/";
-// const BASE_URL = "http://127.00.1:8000/api/";
+// const BASE_URL = "https://sanved-ecom.up.railway.app/api/";
+const BASE_URL = "http://127.0.0.1:8000/api/";
 
 
 
 // ✅ Public API (no token)
 export const publicApi = axios.create({
   baseURL: BASE_URL,
+  withCredentials: false,
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,6 +18,7 @@ export const publicApi = axios.create({
 // 🔐 Private API (with token)
 export const privateApi = axios.create({
   baseURL: BASE_URL,
+  withCredentials: false,
   headers: {
     "Content-Type": "application/json",
   },

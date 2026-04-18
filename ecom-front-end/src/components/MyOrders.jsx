@@ -1,25 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { privateApi } from "../api/axios";
+import { useNavigate } from "react-router-dom";
+
 
 export default function MyOrders() {
+  const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      name: "Gold Ring",
-      price: 2499,
-      qty: 1,
-      status: "Delivered",
-      img: "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
-    },
-    {
-      id: 2,
-      name: "Pearl Necklace",
-      price: 3299,
-      qty: 2,
-      status: "Processing",
-      img: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f"
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const res = await privateApi.get("my-orders");
+      console.log("ORDERS:", res.data);
+      setOrders(res.data);
+    } catch (err) {
+      console.log(err);
     }
-  ]);
+  };
+
+  // ✅ CLICK HANDLER
+  const handleOrderClick = (orderId) => {
+    navigate(`/order/${orderId}`);
+  };
+
+
+
 
   // ❌ Cancel Order
   const cancelOrder = (id) => {
@@ -30,8 +38,11 @@ export default function MyOrders() {
     ));
   };
 
+
+
+  
   return (
-    <div className="pt-24 px-10 pb-10 bg-white min-h-[100dvh] max-w-6xl mx-auto">
+    <div className="pt-24 px-10 pb-10 bg-white min-h-[100dvh] max-w-6xl mx-auto font-semibold text-[#0f3d33]">
 
       <h2 className="text-3xl font-serif mb-8">My Orders</h2>
 
@@ -46,65 +57,55 @@ export default function MyOrders() {
       ) : (
         <div className="space-y-6">
 
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="flex gap-6 bg-white p-5 rounded-xl shadow-sm hover:shadow-md transition"
-            >
+{orders.map((order) => {
+  const firstItem = order.items?.[0];
 
-              {/* IMAGE */}
-              <img
-                src={order.img}
-                className="w-28 h-28 object-cover rounded-lg"
-              />
+  return (
+    <div
+      key={order.id}
+      className="flex gap-6 bg-white p-5 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
+      onClick={() => handleOrderClick(order.id)}   // 👈 CLICK
+    >
 
-              {/* DETAILS */}
-              <div className="flex-1">
-                <p className="font-medium text-lg">{order.name}</p>
+      {/* IMAGE */}
+<img
+  src={firstItem?.image || "https://via.placeholder.com/150"}
+  className="w-28 h-28 object-cover rounded-lg"
+/>
 
-                <p className="text-gray-500 mt-1">
-                  ₹{order.price.toLocaleString()}
-                </p>
+      {/* DETAILS */}
+      <div className="flex-1">
+        <p className="font-medium text-lg">
+          {firstItem?.variant?.product?.name}
+        </p>
 
-                <p className="text-gray-500 text-sm mt-1">
-                  Qty: {order.qty}
-                </p>
+        <p className="text-gray-500 mt-1">
+          ₹{firstItem?.price}
+        </p>
 
-                {/* STATUS */}
-                <p
-                  className={`mt-2 text-sm font-semibold
-                  ${order.status === "Delivered" && "text-green-600"}
-                  ${order.status === "Processing" && "text-yellow-600"}
-                  ${order.status === "Cancelled" && "text-red-500"}
-                `}
-                >
-                  {order.status}
-                </p>
+        <p className="text-gray-500 text-sm mt-1">
+          Qty: {firstItem?.quantity}
+        </p>
 
-                {/* CANCEL BUTTON */}
-                {order.status === "Processing" && (
-                  <button
-                    onClick={() => cancelOrder(order.id)}
-                    className="mt-3 text-red-500 text-sm hover:underline"
-                  >
-                    Cancel Order
-                  </button>
-                )}
-              </div>
+        <p className="mt-2 text-sm font-semibold">
+          {order.status}
+        </p>
+      </div>
 
-              {/* RIGHT SIDE */}
-              <div className="text-right flex flex-col justify-between">
-                <p className="text-sm text-gray-500">
-                  Order ID: #{order.id}
-                </p>
+      {/* RIGHT */}
+      <div className="text-right flex flex-col justify-between">
+        <p className="text-sm text-gray-500">
+          Order ID: #{order.id}
+        </p>
 
-                <p className="font-semibold text-lg">
-                  ₹{(order.price * order.qty).toLocaleString()}
-                </p>
-              </div>
+        <p className="font-semibold text-lg">
+          ₹{order.total_amount}
+        </p>
+      </div>
 
-            </div>
-          ))}
+    </div>
+  );
+})}
 
         </div>
       )}

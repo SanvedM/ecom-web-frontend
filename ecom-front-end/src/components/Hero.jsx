@@ -1,5 +1,5 @@
 import React from "react";
-import img1 from "../assets/img1.jpg";
+import img1 from "../assets/abcd.png";
 
 export default function Hero() {
   return (
@@ -16,7 +16,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black/30"></div>
 
       {/* TEXT RIGHT SIDE */}
-      <div className="absolute inset-0 flex items-center justify-end px-10 md:px-20">
+      <div className="absolute inset-0 flex items-center justify-start px-10 md:px-20">
         <div className="max-w-xl text-white text-right">
           
           <p className="text-xs tracking-[0.3em] mb-4 opacity-80">

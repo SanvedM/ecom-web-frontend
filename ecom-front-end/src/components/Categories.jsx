@@ -67,7 +67,7 @@ export default function Categories() {
 
   
   return (
-    <div className="pt-14 p-10 bg-gray-100">
+    <div className="pt-14 p-10 bg-gray-100 font-semibold text-[#0f3d33]">
 
       {/* BACK */}
       {selectedCategory && (
@@ -181,7 +181,7 @@ export default function Categories() {
   {p.name}
 </p>
 
-<p className="mt-2 text-gray-500 text-sm">₹
+<p className="text-gray-900 text-bold">₹ 
                         {variant
                           ? Number(variant.price).toLocaleString()
                           : "N/A"}

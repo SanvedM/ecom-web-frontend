@@ -84,7 +84,7 @@ export default function Products() {
     //   </div>
     // </div>
 
-    <div className="p-10">
+    <div className="p-10 font-semibold text-[#0f3d33]">
       <h2 className="text-3xl font-serif text-center mb-6">
         New Arrivals
       </h2>
@@ -99,7 +99,7 @@ export default function Products() {
               key={p.id}
               onClick={() => navigate(`/product/${p.id}`)}   // ✅ CHANGE HERE
               className="cursor-pointer min-w-[50%] sm:min-w-[50%] md:min-w-[25%] 
-              max-w-[50%] sm:max-w-[50%] md:max-w-[25%] 
+              max-w-[70%] sm:max-w-[50%] md:max-w-[25%] 
               flex-shrink-0 bg-white rounded-lg shadow"
             >
               <div className="h-56 w-full overflow-hidden rounded-t-lg">
@@ -113,8 +113,11 @@ export default function Products() {
                 <p className="font-medium line-clamp-2">
                   {p.name}
                 </p>
+                <p className="text-sm line-clamp-2">
+                  {p.description}
+                </p>
 
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-900 text-bold">
                   ₹ {variant?.price || "N/A"}
                 </p>
               </div>

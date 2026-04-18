@@ -11,6 +11,9 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import OrderDetail from "./components/OrderDetails";
+import AddressForm from "./components/AddressForm";
+import AddressPage from "./components/AddrssPage";
 
 export default function App() {
   return (
@@ -29,6 +32,10 @@ export default function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/product/:id" element={<ProductDetails />} />  
         <Route path="/orders" element={<MyOrders/>}/>
+        <Route path="/order/:id" element={<OrderDetail />} />
+        {/* <Route path="/address" element={<AddressForm/>}/> */}
+        <Route path="/address" element={<AddressPage />} />
+        
 
       </Routes>
       <Footer />

@@ -12,7 +12,11 @@ export default function ProductDetails() {
   const {category, products } = location.state || {};
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState({
+  show: false,
+  message: "",
+  type: "success"
+});
   const [loading, setLoading] = useState(false);
   const [inCart, setInCart] = useState(false);
 
@@ -61,12 +65,16 @@ export default function ProductDetails() {
       // ✅ mark as in cart
       setInCart(true);
 
-      setToast({
-        name: product.name,
-        qty: qty
-      });
+    setToast({
+      show: true,
+      message: `${product.name} added to cart`,
+      type: "success"
+    });
 
-      setTimeout(() => setToast(null), 2500);
+    setTimeout(() => {
+      setToast({ show: false, message: "", type: "success" });
+    }, 2000);
+
 
     } catch (err) {
       console.log(err);
@@ -100,7 +108,7 @@ export default function ProductDetails() {
 
 
   return (
-    <div className="pt-24 px-10 pb-10 bg-gray-100 min-h-screen">
+    <div className="pt-24 px-10 pb-10 bg-gray-100 min-h-screen font-semibold text-[#0f3d33]">
 
       {/* BACK */}
       {/* <button
@@ -227,31 +235,27 @@ export default function ProductDetails() {
       </div>
 
       {/* TOAST */}
-      {toast && (
-        <div className="fixed top-5 right-5 z-50">
-          <div className="flex items-center gap-4 bg-white border shadow-xl rounded-xl px-5 py-4">
+{toast.show && (
+  <div className="fixed inset-0 flex items-start justify-center pt-24 bg-black/10 z-50">
 
-            {/* ICON */}
-            <div className="bg-green-100 text-green-600 rounded-full p-2">
-              ✓
-            </div>
+    <div className="bg-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-3 min-w-[240px] animate-fadeIn">
 
-            {/* TEXT */}
-            <div className="text-sm font-medium">
-              {toast.name} added (x{toast.qty})
-            </div>
+      {/* ICON */}
+      <div
+        className={`w-6 h-6 flex items-center justify-center rounded-full text-white text-sm
+        ${toast.type === "success" ? "bg-green-600" : "bg-red-500"}`}
+      >
+        ✔
+      </div>
 
-            {/* CLOSE */}
-            <button
-              onClick={() => setToast(null)}
-              className="text-gray-400 hover:text-black text-lg"
-            >
-              ×
-            </button>
+      {/* TEXT */}
+      <p className="text-gray-800 text-sm font-medium">
+        {toast.message}
+      </p>
 
-          </div>
-        </div>
-      )}
+    </div>
+  </div>
+)}
     </div>
   );
 }

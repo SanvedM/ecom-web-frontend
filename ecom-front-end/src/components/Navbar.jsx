@@ -240,10 +240,11 @@ export default function Navbar() {
   const token = localStorage.getItem("token");
   const isLoggedIn = !!token;
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user"); // ✅ important
+  navigate("/login");
+};
 
   const scrollToCategories = () => {
     if (window.location.pathname !== "/") {
@@ -274,125 +275,110 @@ export default function Navbar() {
       });
     }
   };
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
-    <div className="bg-white shadow-sm fixed top-0 left-0 w-full z-50">
+    <div className="bg-white shadow-sm fixed top-0 left-0 w-full z-50 font-semibold text-[#0f3d33]">
 
       {/* NAVBAR */}
-      <div className="flex justify-between items-center px-4 md:px-12 py-5">
+<div className="flex justify-between items-center px-4 md:px-20 py-5">
 
-        {/* MOBILE MENU */}
-        <div className="md:hidden">
-          <button onClick={() => setOpen(!open)}>
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+  {/* LEFT SECTION → LOGO + SEARCH */}
+  <div className="flex items-center gap-6">
 
-        {/* LEFT */}
-        <div className="hidden md:flex items-center gap-8">
+    {/* MOBILE MENU */}
+    <div className="md:hidden">
+      <button onClick={() => setOpen(!open)}>
+        {open ? <X size={24} /> : <Menu size={24} />}
+      </button>
+    </div>
 
-          <div className="flex gap-8 text-base font-medium text-gray-800">
-            <Link to="/">Collections</Link>
+    {/* LOGO */}
+    <div
+      className="text-xl md:text-3xl font-serif tracking-[0.35em] cursor-pointer"
+      onClick={() => navigate("/")}
+    >
+      AURA
+    </div>
 
-            <span onClick={scrollToCategories} className="cursor-pointer">
-              Categories
-            </span>
+    {/* SEARCH (DESKTOP ONLY) */}
+    <div className="hidden md:flex items-center border rounded-full px-4 py-2 ml-6">
+    <input
+      type="text"
+      placeholder="Search..."
+      className="outline-none text-sm bg-transparent flex-1 min-w-[120px]"
+    />
+      <Search size={18} className="ml-2" />
+    </div>
 
-            <span onClick={scrollToContact} className="cursor-pointer">
-              Contact
-            </span>
-          </div>
+  </div>
 
-          {/* SEARCH */}
-          <div className="flex items-center border rounded-full px-4 py-2">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="outline-none text-sm bg-transparent w-32 focus:w-48 transition"
-            />
-            <Search size={18} className="ml-2" />
-          </div>
-        </div>
+  {/* RIGHT SECTION */}
+  <div className="hidden md:flex items-center gap-8">
 
-        {/* LOGO */}
-        <div className="text-xl md:text-3xl font-serif tracking-[0.35em]">
-          AURA
-        </div>
+    {/* NAV LINKS */}
+    <div className="flex gap-8 text-base font-medium text-gray-800">
+      <Link to="/">Collections</Link>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-5 md:gap-7">
+      <span onClick={scrollToCategories} className="cursor-pointer">
+        Categories
+      </span>
 
-          {/* MOBILE SEARCH */}
-          <button
-            className="md:hidden"
-            onClick={() => setSearchOpen(!searchOpen)}
+      <span onClick={scrollToContact} className="cursor-pointer">
+        Contact
+      </span>
+    </div>
+
+    {/* AUTH / CART / PROFILE */}
+    <div className="flex items-center gap-5">
+
+      {!isLoggedIn ? (
+        <button
+          onClick={() => navigate("/login")}
+          className="bg-black text-white px-4 py-1 rounded-lg text-sm"
+        >
+          Login
+        </button>
+      ) : (
+        <>
+          <div
+            className="cursor-pointer"
+            onClick={() => navigate("/cart")}
           >
-            {searchOpen ? <X size={22} /> : <Search size={22} />}
-          </button>
+            <ShoppingCart size={28} />
+          </div>
 
-          {/* NOT LOGGED IN */}
-          {!isLoggedIn && (
-            <button
-              onClick={() => navigate("/login")}
-              className="bg-black text-white px-4 py-1 rounded-lg text-sm"
-            >
-              Login
-            </button>
-          )}
+          {/* PROFILE (same as your code) */}
+          {/* KEEP YOUR EXISTING PROFILE DROPDOWN HERE */}
+        </>
+      )}
 
-          {/* LOGGED IN */}
-          {isLoggedIn && (
-            <>
-              {/* 🛒 CART ONLY */}
-              <div
-                className="cursor-pointer"
-                onClick={() => navigate("/cart")}
-              >
-                <ShoppingCart size={28} />
-              </div>
+    </div>
+  </div>
 
-              {/* 👤 PROFILE */}
-              <div className="relative">
+  {/* MOBILE RIGHT SIDE */}
+  <div className="flex items-center gap-5 md:hidden">
 
-                {/* PROFILE ICON */}
-                <div
-                  onClick={() => setProfileOpen(!profileOpen)}
-                  className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
-                >
-                  👤
-                </div>
+    <button onClick={() => setSearchOpen(!searchOpen)}>
+      {searchOpen ? <X size={22} /> : <Search size={22} />}
+    </button>
 
-                {/* DROPDOWN */}
-                {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg z-50">
-
-                    <button
-                      onClick={() => {
-                        navigate("/orders");
-                        setProfileOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                    >
-                      My Orders
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setProfileOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+    {!isLoggedIn ? (
+      <button
+        onClick={() => navigate("/login")}
+        className="bg-black text-white px-4 py-1 rounded-lg text-sm"
+      >
+        Login
+      </button>
+    ) : (
+      <div onClick={() => navigate("/cart")}>
+        <ShoppingCart size={26} />
       </div>
+    )}
+
+  </div>
+
+</div>
       {/* MOBILE SEARCH INPUT */}
       {searchOpen && (
         <div className="md:hidden px-4 pb-4">
