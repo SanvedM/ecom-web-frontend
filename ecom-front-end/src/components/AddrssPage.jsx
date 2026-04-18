@@ -32,7 +32,13 @@ export default function AddressPage() {
     alert("Address saved ✅");
   };
 
-  if (loading) return <p className="text-center mt-20">Loading...</p>;
+  if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Loading...</p>
+    </div>
+  );
+}
 
   return (
     <div className="max-w-xl mx-auto mt-24 p-4">
