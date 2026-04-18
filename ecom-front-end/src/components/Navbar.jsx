@@ -89,7 +89,7 @@ export default function Navbar() {
 
           {/* NAV LINKS */}
           <div className="flex gap-8 text-base font-medium text-gray-800">
-            <Link to="/">Collections</Link>
+            <Link to="/">Home</Link>
 
             <span onClick={scrollToCategories} className="cursor-pointer">
               Categories
@@ -284,7 +284,7 @@ export default function Navbar() {
         <div className="md:hidden px-6 pb-6 border-t">
           <div className="flex flex-col gap-5 text-gray-800">
 
-            <span onClick={() => navigate("/")}>Collections</span>
+            <span onClick={() => navigate("/")}>Home</span>
             <span onClick={scrollToCategories}>Categories</span>
             <span onClick={scrollToContact}>Contact</span>
 

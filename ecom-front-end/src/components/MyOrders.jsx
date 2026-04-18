@@ -6,12 +6,14 @@ import { useNavigate } from "react-router-dom";
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
       const res = await privateApi.get("my-orders");
       console.log("ORDERS:", res.data);
@@ -19,6 +21,7 @@ export default function MyOrders() {
     } catch (err) {
       console.log(err);
     }
+    setLoading(false);
   };
 
   // ✅ CLICK HANDLER
@@ -47,12 +50,13 @@ export default function MyOrders() {
       <h2 className="text-3xl font-serif mb-8">My Orders</h2>
 
       {/* EMPTY STATE */}
-      {orders.length === 0 ? (
+      {loading ? (
+        <div className="text-center py-20">
+          <p>Loading orders...</p>
+        </div>
+      ) : orders.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-xl mb-4">📦 No orders yet</p>
-          <button className="bg-black text-white px-6 py-2 rounded-lg hover:scale-105 transition">
-            Start Shopping
-          </button>
         </div>
       ) : (
         <div className="space-y-6">

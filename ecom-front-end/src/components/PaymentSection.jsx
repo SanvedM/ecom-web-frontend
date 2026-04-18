@@ -14,9 +14,10 @@ export default function PaymentSection({ onCOD, onOnline }) {
           <span>💳 Pay Online</span>
           <button
             onClick={onOnline}
+            disabled
             className="bg-[#0f3d33] text-white px-4 py-2 rounded"
           >
-            Pay Now
+            Pay Online (Not Available)
           </button>
         </div>
 
