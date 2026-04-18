@@ -23,6 +23,51 @@ export default function Cart() {
   show: false,
   message: ""
 });
+// ================= INCREASE =================
+const increaseQty = async (item) => {
+  try {
+    // UI update
+    setCartItems(prev =>
+      prev.map(i =>
+        i.id === item.id
+          ? { ...i, quantity: i.quantity + 1 }
+          : i
+      )
+    );
+
+    // OPTIONAL API
+    await privateApi.post("update-cart", {
+      item_id: item.id,
+      quantity: item.quantity + 1
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// ================= DECREASE =================
+const decreaseQty = async (item) => {
+  if (item.quantity <= 1) return; // prevent 0
+
+  try {
+    setCartItems(prev =>
+      prev.map(i =>
+        i.id === item.id
+          ? { ...i, quantity: i.quantity - 1 }
+          : i
+      )
+    );
+
+    await privateApi.post("update-cart", {
+      item_id: item.id,
+      quantity: item.quantity - 1
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   const [cartItems, setCartItems] = useState([]);
 
@@ -109,7 +154,35 @@ export default function Cart() {
                     </button>
                   </div>
 
-                  <p>₹{item.price * item.quantity}</p>
+                  <div className="flex flex-col items-end gap-2">
+
+  {/* QUANTITY CONTROLS */}
+  <div className="flex items-center border rounded">
+
+    <button
+      onClick={() => decreaseQty(item)}
+      className="px-3 py-1 text-lg"
+    >
+      −
+    </button>
+
+    <span className="px-4">{item.quantity}</span>
+
+    <button
+      onClick={() => increaseQty(item)}
+      className="px-3 py-1 text-lg"
+    >
+      +
+    </button>
+
+  </div>
+
+  {/* PRICE */}
+  <p className="font-medium">
+    ₹{item.price * item.quantity}
+  </p>
+
+</div>
                 </div>
               ))}
             </div>
