@@ -138,7 +138,7 @@ const decreaseQty = async (item) => {
             {/* LEFT */}
             <div className="md:col-span-2 space-y-6">
               {cartItems.map(item => (
-                <div key={item.id} className="flex gap-6 border p-4 rounded-lg">
+                <div key={item.id} className="flex flex-col md:flex-row gap-4 md:gap-6 border p-4 rounded-lg">
 
                   <img src={item.image} className="w-28 h-28 rounded" />
 
@@ -154,7 +154,7 @@ const decreaseQty = async (item) => {
                     </button>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-3 w-full md:w-auto">
 
   {/* QUANTITY CONTROLS */}
   <div className="flex items-center border rounded">
